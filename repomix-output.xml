@@ -1,0 +1,1999 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  favicon.ico
+  favicon.svg
+src/
+  assets/
+    astro.svg
+    background.svg
+  components/
+    ui/
+      badge.tsx
+      button.tsx
+      card.tsx
+      input.tsx
+      label.tsx
+      separator.tsx
+      textarea.tsx
+    Welcome.astro
+  layouts/
+    Layout.astro
+  lib/
+    utils.ts
+  pages/
+    index.astro
+  styles/
+    global.css
+.gitignore
+AGENTS.md
+astro.config.mjs
+components.json
+package.json
+README.md
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="src/components/ui/badge.tsx">
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "group/badge inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
+        secondary:
+          "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+        destructive:
+          "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+        outline:
+          "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
+        ghost:
+          "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+function Badge({
+  className,
+  variant = "default",
+  render,
+  ...props
+}: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
+  return useRender({
+    defaultTagName: "span",
+    props: mergeProps<"span">(
+      {
+        className: cn(badgeVariants({ variant }), className),
+      },
+      props
+    ),
+    render,
+    state: {
+      slot: "badge",
+      variant,
+    },
+  })
+}
+
+export { Badge, badgeVariants }
+</file>
+
+<file path="src/components/ui/button.tsx">
+import { Button as ButtonPrimitive } from "@base-ui/react/button"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        xs: "h-6 gap-1 rounded-[min(var(--radius-md),10px)] px-2 text-xs in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 rounded-[min(var(--radius-md),12px)] px-2.5 text-[0.8rem] in-data-[slot=button-group]:rounded-lg has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
+        icon: "size-8",
+        "icon-xs":
+          "size-6 rounded-[min(var(--radius-md),10px)] in-data-[slot=button-group]:rounded-lg [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm":
+          "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  ...props
+}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+  return (
+    <ButtonPrimitive
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { Button, buttonVariants }
+</file>
+
+<file path="src/components/ui/card.tsx">
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Card({
+  className,
+  size = "default",
+  ...props
+}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+  return (
+    <div
+      data-slot="card"
+      data-size={size}
+      className={cn(
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn(
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn(
+        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+function CardAction({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn(
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-(--card-spacing)", className)}
+      {...props}
+    />
+  )
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn(
+        "flex items-center rounded-b-xl border-t bg-muted/50 p-(--card-spacing)",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardAction,
+  CardDescription,
+  CardContent,
+}
+</file>
+
+<file path="src/components/ui/input.tsx">
+import * as React from "react"
+import { Input as InputPrimitive } from "@base-ui/react/input"
+
+import { cn } from "@/lib/utils"
+
+function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+  return (
+    <InputPrimitive
+      type={type}
+      data-slot="input"
+      className={cn(
+        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Input }
+</file>
+
+<file path="src/components/ui/label.tsx">
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Label({ className, ...props }: React.ComponentProps<"label">) {
+  return (
+    <label
+      data-slot="label"
+      className={cn(
+        "flex items-center gap-2 text-sm leading-none font-medium select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Label }
+</file>
+
+<file path="src/components/ui/separator.tsx">
+"use client"
+
+import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
+
+import { cn } from "@/lib/utils"
+
+function Separator({
+  className,
+  orientation = "horizontal",
+  ...props
+}: SeparatorPrimitive.Props) {
+  return (
+    <SeparatorPrimitive
+      data-slot="separator"
+      orientation={orientation}
+      className={cn(
+        "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Separator }
+</file>
+
+<file path="src/components/ui/textarea.tsx">
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
+  return (
+    <textarea
+      data-slot="textarea"
+      className={cn(
+        "flex field-sizing-content min-h-16 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Textarea }
+</file>
+
+<file path="src/lib/utils.ts">
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+</file>
+
+<file path="src/styles/global.css">
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Geist Variable', sans-serif;
+    --color-sidebar-ring: var(--sidebar-ring);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar: var(--sidebar);
+    --color-chart-5: var(--chart-5);
+    --color-chart-4: var(--chart-4);
+    --color-chart-3: var(--chart-3);
+    --color-chart-2: var(--chart-2);
+    --color-chart-1: var(--chart-1);
+    --color-ring: var(--ring);
+    --color-input: var(--input);
+    --color-border: var(--border);
+    --color-destructive: var(--destructive);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-accent: var(--accent);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-muted: var(--muted);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-secondary: var(--secondary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary: var(--primary);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-popover: var(--popover);
+    --color-card-foreground: var(--card-foreground);
+    --color-card: var(--card);
+    --color-foreground: var(--foreground);
+    --color-background: var(--background);
+    --radius-sm: calc(var(--radius) * 0.6);
+    --radius-md: calc(var(--radius) * 0.8);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) * 1.4);
+    --radius-2xl: calc(var(--radius) * 1.8);
+    --radius-3xl: calc(var(--radius) * 2.2);
+    --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
+    }
+  html {
+    @apply font-sans;
+    }
+}
+</file>
+
+<file path="components.json">
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-nova",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/global.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "rtl": false,
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}
+</file>
+
+<file path="public/favicon.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 128 128">
+    <path d="M50.4 78.5a75.1 75.1 0 0 0-28.5 6.9l24.2-65.7c.7-2 1.9-3.2 3.4-3.2h29c1.5 0 2.7 1.2 3.4 3.2l24.2 65.7s-11.6-7-28.5-7L67 45.5c-.4-1.7-1.6-2.8-2.9-2.8-1.3 0-2.5 1.1-2.9 2.7L50.4 78.5Zm-1.1 28.2Zm-4.2-20.2c-2 6.6-.6 15.8 4.2 20.2a17.5 17.5 0 0 1 .2-.7 5.5 5.5 0 0 1 5.7-4.5c2.8.1 4.3 1.5 4.7 4.7.2 1.1.2 2.3.2 3.5v.4c0 2.7.7 5.2 2.2 7.4a13 13 0 0 0 5.7 4.9v-.3l-.2-.3c-1.8-5.6-.5-9.5 4.4-12.8l1.5-1a73 73 0 0 0 3.2-2.2 16 16 0 0 0 6.8-11.4c.3-2 .1-4-.6-6l-.8.6-1.6 1a37 37 0 0 1-22.4 2.7c-5-.7-9.7-2-13.2-6.2Z" />
+    <style>
+        path { fill: #000; }
+        @media (prefers-color-scheme: dark) {
+            path { fill: #FFF; }
+        }
+    </style>
+</svg>
+</file>
+
+<file path="src/assets/astro.svg">
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="115" height="48"><path fill="#17191E" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="url(#a)" d="M7.77 36.35C6.4 35.11 6 32.51 6.57 30.62c.99 1.2 2.35 1.57 3.75 1.78 2.18.33 4.31.2 6.33-.78.23-.12.44-.27.7-.42.18.55.23 1.1.17 1.67a4.56 4.56 0 0 1-1.94 3.23c-.43.32-.9.61-1.34.91-1.38.94-1.76 2.03-1.24 3.62l.05.17a3.63 3.63 0 0 1-1.6-1.38 3.87 3.87 0 0 1-.63-2.1c0-.37 0-.74-.05-1.1-.13-.9-.55-1.3-1.33-1.32a1.56 1.56 0 0 0-1.63 1.26c0 .06-.03.12-.05.2Z"/><path fill="#17191E" d="M.02 30.31s4.02-1.95 8.05-1.95l3.04-9.4c.11-.45.44-.76.82-.76.37 0 .7.31.82.76l3.04 9.4c4.77 0 8.05 1.95 8.05 1.95L17 11.71c-.2-.56-.53-.91-.98-.91H7.83c-.44 0-.76.35-.97.9L.02 30.31Zm42.37-5.97c0 1.64-2.05 2.62-4.88 2.62-1.85 0-2.5-.45-2.5-1.41 0-1 .8-1.49 2.65-1.49 1.67 0 3.09.03 4.73.23v.05Zm.03-2.04a21.37 21.37 0 0 0-4.37-.36c-5.32 0-7.82 1.25-7.82 4.18 0 3.04 1.71 4.2 5.68 4.2 3.35 0 5.63-.84 6.46-2.92h.14c-.03.5-.05 1-.05 1.4 0 1.07.18 1.16 1.06 1.16h4.15a16.9 16.9 0 0 1-.36-4c0-1.67.06-2.93.06-4.62 0-3.45-2.07-5.64-8.56-5.64-2.8 0-5.9.48-8.26 1.19.22.93.54 2.83.7 4.06 2.04-.96 4.95-1.37 7.2-1.37 3.11 0 3.97.71 3.97 2.15v.57Zm11.37 3c-.56.07-1.33.07-2.12.07-.83 0-1.6-.03-2.12-.1l-.02.58c0 2.85 1.87 4.52 8.45 4.52 6.2 0 8.2-1.64 8.2-4.55 0-2.74-1.33-4.09-7.2-4.39-4.58-.2-4.99-.7-4.99-1.28 0-.66.59-1 3.65-1 3.18 0 4.03.43 4.03 1.35v.2a46.13 46.13 0 0 1 4.24.03l.02-.55c0-3.36-2.8-4.46-8.2-4.46-6.08 0-8.13 1.49-8.13 4.39 0 2.6 1.64 4.23 7.48 4.48 4.3.14 4.77.62 4.77 1.28 0 .7-.7 1.03-3.71 1.03-3.47 0-4.35-.48-4.35-1.47v-.13Zm19.82-12.05a17.5 17.5 0 0 1-6.24 3.48c.03.84.03 2.4.03 3.24l1.5.02c-.02 1.63-.04 3.6-.04 4.9 0 3.04 1.6 5.32 6.58 5.32 2.1 0 3.5-.23 5.23-.6a43.77 43.77 0 0 1-.46-4.13c-1.03.34-2.34.53-3.78.53-2 0-2.82-.55-2.82-2.13 0-1.37 0-2.65.03-3.84 2.57.02 5.13.07 6.64.11-.02-1.18.03-2.9.1-4.04-2.2.04-4.65.07-6.68.07l.07-2.93h-.16Zm13.46 6.04a767.33 767.33 0 0 1 .07-3.18H82.6c.07 1.96.07 3.98.07 6.92 0 2.95-.03 4.99-.07 6.93h5.18c-.09-1.37-.11-3.68-.11-5.65 0-3.1 1.26-4 4.12-4 1.33 0 2.28.16 3.1.46.03-1.16.26-3.43.4-4.43-.86-.25-1.81-.41-2.96-.41-2.46-.03-4.26.98-5.1 3.38l-.17-.02Zm22.55 3.65c0 2.5-1.8 3.66-4.64 3.66-2.81 0-4.61-1.1-4.61-3.66s1.82-3.52 4.61-3.52c2.82 0 4.64 1.03 4.64 3.52Zm4.71-.11c0-4.96-3.87-7.18-9.35-7.18-5.5 0-9.23 2.22-9.23 7.18 0 4.94 3.49 7.59 9.21 7.59 5.77 0 9.37-2.65 9.37-7.6Z"/><defs><linearGradient id="a" x1="6.33" x2="19.43" y1="40.8" y2="34.6" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient></defs></svg>
+</file>
+
+<file path="src/assets/background.svg">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" fill="none"><path fill="url(#a)" fill-rule="evenodd" d="M-217.58 475.75c91.82-72.02 225.52-29.38 341.2-44.74C240 415.56 372.33 315.14 466.77 384.9c102.9 76.02 44.74 246.76 90.31 366.31 29.83 78.24 90.48 136.14 129.48 210.23 57.92 109.99 169.67 208.23 155.9 331.77-13.52 121.26-103.42 264.33-224.23 281.37-141.96 20.03-232.72-220.96-374.06-196.99-151.7 25.73-172.68 330.24-325.85 315.72-128.6-12.2-110.9-230.73-128.15-358.76-12.16-90.14 65.87-176.25 44.1-264.57-26.42-107.2-167.12-163.46-176.72-273.45-10.15-116.29 33.01-248.75 124.87-320.79Z" clip-rule="evenodd" style="opacity:.154"/><path fill="url(#b)" fill-rule="evenodd" d="M1103.43 115.43c146.42-19.45 275.33-155.84 413.5-103.59 188.09 71.13 409 212.64 407.06 413.88-1.94 201.25-259.28 278.6-414.96 405.96-130 106.35-240.24 294.39-405.6 265.3-163.7-28.8-161.93-274.12-284.34-386.66-134.95-124.06-436-101.46-445.82-284.6-9.68-180.38 247.41-246.3 413.54-316.9 101.01-42.93 207.83 21.06 316.62 6.61Z" clip-rule="evenodd" style="opacity:.154"/><defs><linearGradient id="b" x1="373" x2="1995.44" y1="1100" y2="118.03" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient><linearGradient id="a" x1="107.37" x2="1130.66" y1="1993.35" y2="1026.31" gradientUnits="userSpaceOnUse"><stop stop-color="#3245FF"/><stop offset="1" stop-color="#BC52EE"/></linearGradient></defs></svg>
+</file>
+
+<file path="src/components/Welcome.astro">
+---
+import astroLogo from '../assets/astro.svg';
+import background from '../assets/background.svg';
+---
+
+<div id="container">
+	<img id="background" src={background.src} alt="" fetchpriority="high" />
+	<main>
+		<section id="hero">
+			<a href="https://astro.build"
+				><img src={astroLogo.src} width="115" height="48" alt="Astro Homepage" /></a
+			>
+			<h1>
+				To get started, open the <code><pre>src/pages</pre></code> directory in your project.
+			</h1>
+			<section id="links">
+				<a class="button" href="https://docs.astro.build">Read our docs</a>
+				<a href="https://astro.build/chat"
+					>Join our Discord <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36"
+						><path
+							fill="currentColor"
+							d="M107.7 8.07A105.15 105.15 0 0 0 81.47 0a72.06 72.06 0 0 0-3.36 6.83 97.68 97.68 0 0 0-29.11 0A72.37 72.37 0 0 0 45.64 0a105.89 105.89 0 0 0-26.25 8.09C2.79 32.65-1.71 56.6.54 80.21a105.73 105.73 0 0 0 32.17 16.15 77.7 77.7 0 0 0 6.89-11.11 68.42 68.42 0 0 1-10.85-5.18c.91-.66 1.8-1.34 2.66-2a75.57 75.57 0 0 0 64.32 0c.87.71 1.76 1.39 2.66 2a68.68 68.68 0 0 1-10.87 5.19 77 77 0 0 0 6.89 11.1 105.25 105.25 0 0 0 32.19-16.14c2.64-27.38-4.51-51.11-18.9-72.15ZM42.45 65.69C36.18 65.69 31 60 31 53s5-12.74 11.43-12.74S54 46 53.89 53s-5.05 12.69-11.44 12.69Zm42.24 0C78.41 65.69 73.25 60 73.25 53s5-12.74 11.44-12.74S96.23 46 96.12 53s-5.04 12.69-11.43 12.69Z"
+						></path></svg
+					>
+				</a>
+			</section>
+		</section>
+	</main>
+
+	<a href="https://astro.build/blog/astro-6-beta/" id="news" class="box">
+		<svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg"
+			><path
+				d="M24.667 12c1.333 1.414 2 3.192 2 5.334 0 4.62-4.934 5.7-7.334 12C18.444 28.567 18 27.456 18 26c0-4.642 6.667-7.053 6.667-14Zm-5.334-5.333c1.6 1.65 2.4 3.43 2.4 5.333 0 6.602-8.06 7.59-6.4 17.334C13.111 27.787 12 25.564 12 22.666c0-4.434 7.333-8 7.333-16Zm-6-5.333C15.111 3.555 16 5.556 16 7.333c0 8.333-11.333 10.962-5.333 22-3.488-.774-6-4-6-8 0-8.667 8.666-10 8.666-20Z"
+				fill="#111827"></path></svg
+		>
+		<h2>What's New in Astro 6.0?</h2>
+		<p>
+			Redesigned dev server, fonts, live collections, built-in CSP support, and more! Click to
+			explore Astro 6.0's new features.
+		</p>
+	</a>
+</div>
+
+<style>
+	#background {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: -1;
+		filter: blur(100px);
+	}
+
+	#container {
+		font-family: Inter, Roboto, 'Helvetica Neue', 'Arial Nova', 'Nimbus Sans', Arial, sans-serif;
+		height: 100%;
+	}
+
+	main {
+		height: 100%;
+		display: flex;
+		justify-content: center;
+	}
+
+	#hero {
+		display: flex;
+		align-items: start;
+		flex-direction: column;
+		justify-content: center;
+		padding: 16px;
+	}
+
+	h1 {
+		font-size: 22px;
+		margin-top: 0.25em;
+	}
+
+	#links {
+		display: flex;
+		gap: 16px;
+	}
+
+	#links a {
+		display: flex;
+		align-items: center;
+		padding: 10px 12px;
+		color: #111827;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	#links a:hover {
+		color: rgb(78, 80, 86);
+	}
+
+	#links a svg {
+		height: 1em;
+		margin-left: 8px;
+	}
+
+	#links a.button {
+		color: white;
+		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+			inset 0 -2px 0 rgba(0, 0, 0, 0.24);
+		border-radius: 10px;
+	}
+
+	#links a.button:hover {
+		color: rgb(230, 230, 230);
+		box-shadow: none;
+	}
+
+	pre {
+		font-family:
+			ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono',
+			monospace;
+		font-weight: normal;
+		background: linear-gradient(14deg, #d83333 0%, #f041ff 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+		margin: 0;
+	}
+
+	h2 {
+		margin: 0 0 1em;
+		font-weight: normal;
+		color: #111827;
+		font-size: 20px;
+	}
+
+	p {
+		color: #4b5563;
+		font-size: 16px;
+		line-height: 24px;
+		letter-spacing: -0.006em;
+		margin: 0;
+	}
+
+	code {
+		display: inline-block;
+		background:
+			linear-gradient(66.77deg, #f3cddd 0%, #f5cee7 100%) padding-box,
+			linear-gradient(155deg, #d83333 0%, #f041ff 18%, #f5cee7 45%) border-box;
+		border-radius: 8px;
+		border: 1px solid transparent;
+		padding: 6px 8px;
+	}
+
+	.box {
+		padding: 16px;
+		background: rgba(255, 255, 255, 1);
+		border-radius: 16px;
+		border: 1px solid white;
+	}
+
+	#news {
+		position: absolute;
+		bottom: 16px;
+		right: 16px;
+		max-width: 300px;
+		text-decoration: none;
+		transition: background 0.2s;
+		backdrop-filter: blur(50px);
+	}
+
+	#news:hover {
+		background: rgba(255, 255, 255, 0.55);
+	}
+
+	@media screen and (max-height: 368px) {
+		#news {
+			display: none;
+		}
+	}
+
+	@media screen and (max-width: 768px) {
+		#container {
+			display: flex;
+			flex-direction: column;
+		}
+
+		#hero {
+			display: block;
+			padding-top: 10%;
+		}
+
+		#links {
+			flex-wrap: wrap;
+		}
+
+		#links a.button {
+			padding: 14px 18px;
+		}
+
+		#news {
+			right: 16px;
+			left: 16px;
+			bottom: 2.5rem;
+			max-width: 100%;
+		}
+
+		h1 {
+			line-height: 1.5;
+		}
+	}
+</style>
+</file>
+
+<file path="src/layouts/Layout.astro">
+---
+import '../styles/global.css'   
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro Basics</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+
+<style>
+	html,
+	body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+</file>
+
+<file path="src/pages/index.astro">
+---
+import Welcome from '../components/Welcome.astro';
+import Layout from '../layouts/Layout.astro';
+
+// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
+// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+---
+
+<Layout>
+	<Welcome />
+</Layout>
+</file>
+
+<file path=".gitignore">
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+</file>
+
+<file path="AGENTS.md">
+# BCPC Frontend - AI Agent Guidelines
+
+## 🎯 Project Overview
+
+This is the frontend for **Birjand Competitive Programming Contest (BCPC)** — the local branch of ICPC at the University of Birjand.
+
+### Core Pages & Features
+
+- **Landing Page** — Hero section with engaging animations, smooth scroll, contest highlights
+- **About Contest** — Introduction to ICPC/BCPC, rules, timeline
+- **Gallery** — Photos from previous years' contests
+- **Register** — Registration form for participants
+- **Online Contest Entry** — Login/entry portal for the live contest
+- **Contact Us** — Contact form and organizer information
+
+### Design Philosophy
+
+- **Mobile-first responsive** design (critical: mobile & desktop parity)
+- **Smooth scrolling** and micro-interactions
+- **Modern, engaging animations** (not heavy — performance-aware)
+- **Clean, academic yet modern** aesthetic (fitting for a university contest)
+- **Persian (RTL) support** — primary language is Persian, English secondary
+- **Dark/Light mode** support via shadcn theme system
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── assets/
+│   ├── images/          # Photos (gallery, hero, sponsors)
+│   └── icons/           # Custom SVG icons
+├── components/
+│   ├── ui/              # shadcn/ui primitives (DO NOT edit manually — use CLI)
+│   ├── sections/        # Landing page sections (Hero, About, Gallery, etc.)
+│   ├── layout/          # Header, Footer, Navbar, MobileMenu
+│   ├── animations/      # Reusable animation components & variants
+│   └── shared/          # Reusable components (Button, Card, etc.)
+├── hooks/
+│   ├── use-scroll-animation.ts
+│   ├── use-countdown.ts
+│   └── use-media-query.ts
+├── layouts/             # Astro layouts (BaseLayout, AuthLayout, etc.)
+├── lib/
+│   ├── utils.ts         # cn() helper
+│   ├── constants.ts     # Site-wide constants (dates, links, texts)
+│   ├── animations.ts    # Animation variants & presets
+│   └── api.ts           # API client (if needed)
+├── pages/
+│   ├── index.astro
+│   ├── about.astro
+│   ├── gallery.astro
+│   ├── register.astro
+│   ├── contact.astro
+│   ├── login.astro
+│   └── api/
+└── styles/
+    ├── global.css
+    └── animations.css   # Custom keyframes
+```
+
+### Rules for Structure
+
+- ✅ **One component per file** — never combine multiple components
+- ✅ **Section components** go in `components/sections/` (e.g., `HeroSection.tsx`)
+- ✅ **Animation components** go in `components/animations/` (e.g., `FadeIn.tsx`)
+- ✅ **Layout components** go in `components/layout/` (e.g., `Header.tsx`)
+- ✅ **Page-specific logic** stays in the page file or a dedicated hook
+- ❌ **Never** put business logic inside UI components
+- ❌ **Never** create files deeper than 3 levels in `components/`
+
+---
+
+## 🎨 Tech Stack & Conventions
+
+### Framework
+
+- **Astro 7** — static-first, islands architecture
+- **React 19** — for interactive components (add `client:load`, `client:visible`, or `client:only` as needed)
+- **TypeScript (strict mode)** — no `any`, no `@ts-ignore`
+
+### Styling
+
+- **Tailwind CSS v4** — utility-first, via Vite plugin
+- **shadcn/ui (base-nova style)** — component library
+- **CSS Variables** — for theming (defined in `global.css`)
+- **`cn()` utility** — always use for merging classes: `cn("base", condition && "conditional", className)`
+
+### Animation Stack
+
+- **Framer Motion (`motion`)** — for React component animations (primary)
+- **CSS transitions** — for simple hover/focus states
+- **CSS keyframes** — for complex repeating animations (defined in `animations.css`)
+- **Astro `transition:animate`** — for page transitions (if using View Transitions)
+- **Intersection Observer** — for scroll-triggered animations (via custom hooks)
+
+### Icons
+
+- **Lucide React** — primary icon library
+- Import only what you use: `import { Menu } from "lucide-react"`
+
+---
+
+## 📝 Code Style Rules
+
+### Components
+
+```tsx
+// ✅ GOOD — Named export, typed props, default values
+interface HeroSectionProps {
+  title: string;
+  subtitle?: string;
+}
+
+export function HeroSection({ title, subtitle = "Welcome" }: HeroSectionProps) {
+  return <section>...</section>;
+}
+```
+
+```tsx
+// ❌ BAD — Default export, untyped, inline styles
+export default function Hero({ title }: any) {
+  return <section style={{ color: "red" }}>...</section>;
+}
+```
+
+### Rules
+
+- ✅ Use **named exports** (not default) for components
+- ✅ Define **TypeScript interfaces** for all props
+- ✅ Use **`client:visible`** for below-the-fold animations (performance)
+- ✅ Use **`client:load`** only for critical interactive components
+- ✅ Extract **reusable logic** into custom hooks (`useScrollAnimation`, `useCountdown`)
+- ✅ Use **semantic HTML** (`<section>`, `<article>`, `<nav>`, `<main>`)
+- ✅ Add **`aria-label`** and **`alt`** attributes for accessibility
+- ❌ Don't use inline styles — use Tailwind classes
+- ❌ Don't use `!important` in Tailwind unless absolutely necessary
+- ❌ Don't hardcode strings — use `lib/constants.ts` for translatable text
+
+### File Naming
+
+- Components: `PascalCase.tsx` (e.g., `HeroSection.tsx`)
+- Hooks: `camelCase.ts` with `use` prefix (e.g., `use-countdown.ts`)
+- Utils: `kebab-case.ts` (e.g., `date-utils.ts`)
+- Pages: `kebab-case.astro` or `index.astro`
+
+---
+
+## 🎬 Animation Guidelines (CRITICAL)
+
+### Core Principles
+
+1. **Performance First** — animations must be smooth (60fps) on mobile
+2. **Purposeful** — every animation must have a reason (guide attention, provide feedback, enhance UX)
+3. **Subtle > Flashy** — prefer elegant micro-interactions over flashy effects
+4. **Accessible** — respect `prefers-reduced-motion`
+5. **RTL-Aware** — test animations in both directions
+
+### Animation Types & When to Use
+
+#### 1. **Scroll-Triggered Animations** (Most Common)
+
+Use for revealing content as user scrolls. **Must use `client:visible`** for performance.
+
+```tsx
+// ✅ GOOD — components/animations/FadeIn.tsx
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
+
+interface FadeInProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  direction?: "up" | "down" | "left" | "right" | "none";
+}
+
+export function FadeIn({
+  children,
+  className,
+  delay = 0,
+  direction = "up",
+}: FadeInProps) {
+  const directionOffset = {
+    up: { y: 30 },
+    down: { y: -30 },
+    left: { x: 30 },
+    right: { x: -30 },
+    none: {},
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, ...directionOffset[direction] }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{
+        duration: 0.5,
+        delay,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className={cn(className)}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+**Usage in Astro:**
+
+```astro
+---
+import { FadeIn } from "@/components/animations/FadeIn";
+---
+<FadeIn client:visible direction="up" delay={0.1}>
+  <h2>عنوان بخش</h2>
+</FadeIn>
+```
+
+#### 2. **Hover Animations** (Micro-interactions)
+
+Use for buttons, cards, links. **Use CSS transitions, not Framer Motion** for performance.
+
+```tsx
+// ✅ GOOD — Tailwind + CSS transitions
+export function Card({ title }: { title: string }) {
+  return (
+    <div className="group rounded-xl border bg-card p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+      <h3 className="text-lg font-semibold transition-colors group-hover:text-primary">
+        {title}
+      </h3>
+    </div>
+  );
+}
+```
+
+```tsx
+// ❌ BAD — Framer Motion for simple hover (overkill, worse performance)
+export function Card({ title }: { title: string }) {
+  return (
+    <motion.div whileHover={{ scale: 1.05 }} transition={{ duration: 0.3 }}>
+      <h3>{title}</h3>
+    </motion.div>
+  );
+}
+```
+
+#### 3. **Page Load Animations** (Hero Section)
+
+Use for initial page load. **Stagger children** for elegant effect.
+
+```tsx
+// ✅ GOOD — components/animations/StaggerContainer.tsx
+import { motion } from "motion/react";
+
+interface StaggerContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  staggerDelay?: number;
+}
+
+export function StaggerContainer({
+  children,
+  className,
+  staggerDelay = 0.1,
+}: StaggerContainerProps) {
+  return (
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={{
+        hidden: {},
+        visible: {
+          transition: {
+            staggerChildren: staggerDelay,
+          },
+        },
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export function StaggerItem({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+        },
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+**Usage:**
+
+```tsx
+<StaggerContainer>
+  <StaggerItem>
+    <h1>مسابقه برنامه‌نویسی بیرجند</h1>
+  </StaggerItem>
+  <StaggerItem>
+    <p>بزرگترین رویداد برنامه‌نویسی دانشگاه</p>
+  </StaggerItem>
+  <StaggerItem>
+    <Button>ثبت‌نام</Button>
+  </StaggerItem>
+</StaggerContainer>
+```
+
+#### 4. **Countdown/Timer Animations**
+
+Use for contest countdown. **Use `useCountdown` hook**.
+
+```tsx
+// ✅ GOOD — hooks/use-countdown.ts
+import { useState, useEffect } from "react";
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function useCountdown(targetDate: Date): TimeLeft {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(
+    calculateTimeLeft(targetDate),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(targetDate));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return timeLeft;
+}
+
+function calculateTimeLeft(targetDate: Date): TimeLeft {
+  const difference = targetDate.getTime() - new Date().getTime();
+
+  if (difference <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  };
+}
+```
+
+```tsx
+// ✅ GOOD — components/CountdownTimer.tsx
+import { motion } from "motion/react";
+import { useCountdown } from "@/hooks/use-countdown";
+
+interface CountdownTimerProps {
+  targetDate: Date;
+}
+
+export function CountdownTimer({ targetDate }: CountdownTimerProps) {
+  const timeLeft = useCountdown(targetDate);
+
+  const timeUnits = [
+    { label: "روز", value: timeLeft.days },
+    { label: "ساعت", value: timeLeft.hours },
+    { label: "دقیقه", value: timeLeft.minutes },
+    { label: "ثانیه", value: timeLeft.seconds },
+  ];
+
+  return (
+    <div className="flex gap-4">
+      {timeUnits.map((unit) => (
+        <div key={unit.label} className="text-center">
+          <motion.div
+            key={unit.value}
+            initial={{ scale: 1.1, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="text-4xl font-bold text-primary"
+          >
+            {unit.value.toString().padStart(2, "0")}
+          </motion.div>
+          <div className="text-sm text-muted-foreground">{unit.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+#### 5. **Smooth Scroll** (Navigation)
+
+Use for anchor links. **Use CSS `scroll-behavior: smooth`**.
+
+```css
+/* styles/global.css */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+```
+
+#### 6. **Loading States**
+
+Use for async operations. **Use skeleton loaders, not spinners** (better UX).
+
+```tsx
+// ✅ GOOD — components/Skeleton.tsx
+import { cn } from "@/lib/utils";
+
+export function Skeleton({ className }: { className?: string }) {
+  return <div className={cn("animate-pulse rounded-md bg-muted", className)} />;
+}
+```
+
+### Animation Performance Rules
+
+#### ✅ DO:
+
+- Use `transform` and `opacity` only (GPU-accelerated)
+- Use `will-change` sparingly (only for elements that will animate)
+- Use `viewport={{ once: true }}` for scroll animations (don't re-animate)
+- Use `client:visible` for below-the-fold animations
+- Keep animation duration between **0.2s - 0.6s** (fast enough to feel responsive)
+- Use easing functions like `[0.21, 0.47, 0.32, 0.98]` (natural feel)
+- Test on **low-end mobile devices** (3G, old phones)
+
+#### ❌ DON'T:
+
+- Animate `width`, `height`, `top`, `left`, `margin`, `padding` (causes layout thrashing)
+- Use more than **3 animations on screen at once** (overwhelming)
+- Use `delay` > 1s (user thinks page is broken)
+- Animate large images or complex SVGs (use `transform: scale()` instead)
+- Use Framer Motion for simple hover effects (CSS is faster)
+- Forget to test with `prefers-reduced-motion: reduce`
+
+### Accessibility: Reduced Motion
+
+**MUST** respect user's motion preferences:
+
+```tsx
+// ✅ GOOD — lib/use-reduced-motion.ts
+import { useEffect, useState } from "react";
+
+export function useReducedMotion(): boolean {
+  const [reducedMotion, setReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+
+  return reducedMotion;
+}
+```
+
+```tsx
+// ✅ GOOD — Using reduced motion in components
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
+export function AnimatedCard({ children }: { children: React.ReactNode }) {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      initial={reducedMotion ? {} : { opacity: 0, y: 20 }}
+      whileInView={reducedMotion ? {} : { opacity: 1, y: 0 }}
+      transition={reducedMotion ? { duration: 0 } : { duration: 0.5 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+### RTL Animation Considerations
+
+**Test all animations in RTL!** Some animations need direction-awareness:
+
+```tsx
+// ✅ GOOD — Direction-aware slide animation
+import { useReducedMotion } from "@/lib/use-reduced-motion";
+
+export function SlideIn({
+  children,
+  direction = "left",
+}: {
+  children: React.ReactNode;
+  direction?: "left" | "right";
+}) {
+  const reducedMotion = useReducedMotion();
+  const isRTL = document.documentElement.dir === "rtl";
+
+  // In RTL, "left" becomes "right" and vice versa
+  const actualDirection = isRTL
+    ? direction === "left"
+      ? "right"
+      : "left"
+    : direction;
+
+  const xOffset = actualDirection === "left" ? -50 : 50;
+
+  return (
+    <motion.div
+      initial={reducedMotion ? {} : { opacity: 0, x: xOffset }}
+      whileInView={reducedMotion ? {} : { opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+```
+
+### Animation Variants Library
+
+**Create reusable variants** in `lib/animations.ts`:
+
+```typescript
+// lib/animations.ts
+export const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+};
+
+export const fadeInDown = {
+  initial: { opacity: 0, y: -30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+};
+
+export const scaleIn = {
+  initial: { opacity: 0, scale: 0.9 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] },
+};
+
+export const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+export const staggerItem = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+  },
+};
+```
+
+**Usage:**
+
+```tsx
+import { fadeInUp, staggerContainer, staggerItem } from "@/lib/animations";
+
+<motion.div {...staggerContainer}>
+  <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+    <h1>عنوان</h1>
+  </motion.div>
+  <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+    <p>توضیحات</p>
+  </motion.div>
+</motion.div>;
+```
+
+---
+
+## 🌐 RTL & Persian Support
+
+- Primary language is **Persian (fa)** — use `dir="rtl"` on `<html>`
+- Font: **Vazirmatn** or **Estedad** for Persian, **Geist** for English/numbers
+- All user-facing text should be in Persian (constants file)
+- Ensure animations work correctly in RTL (test both directions)
+- Use `rtl:` and `ltr:` Tailwind variants when needed
+
+---
+
+## 📱 Responsive Design Rules
+
+- **Mobile-first** — write base styles for mobile, then enhance for larger screens
+- Breakpoints (Tailwind defaults):
+  - `sm`: 640px (large mobile)
+  - `md`: 768px (tablet)
+  - `lg`: 1024px (desktop)
+  - `xl`: 1280px (large desktop)
+- **Test all pages** on: 375px (iPhone SE), 768px (iPad), 1440px (desktop)
+- Navigation: **hamburger menu** on mobile, **full nav** on desktop
+- Images: Use `<picture>` or Astro `<Image>` for responsive images
+- Touch targets: minimum **44x44px** for mobile
+
+---
+
+## ⚡ Performance Rules
+
+- ✅ Use **Astro `<Image>`** component for automatic optimization
+- ✅ Lazy load below-the-fold images (`loading="lazy"`)
+- ✅ Use **`client:visible`** for animations (not `client:load`)
+- ✅ Keep bundle size small — avoid heavy libraries
+- ✅ Prefer **CSS animations** over JS when possible
+- ✅ Optimize SVGs before adding to `assets/`
+- ❌ Don't import entire icon libraries — import individually
+- ❌ Don't use large images without optimization
+
+---
+
+## 🧪 Before Submitting Code
+
+Checklist for AI agents:
+
+- [ ] TypeScript strict mode — no errors
+- [ ] All components are typed
+- [ ] Responsive on mobile & desktop
+- [ ] Animations are smooth and performant (60fps)
+- [ ] Respects `prefers-reduced-motion`
+- [ ] RTL layout works correctly (test both directions)
+- [ ] Accessibility: `alt`, `aria-label`, semantic HTML
+- [ ] No hardcoded strings (use constants)
+- [ ] File structure follows conventions
+- [ ] No unused imports or variables
+- [ ] Animations use `transform` and `opacity` only
+- [ ] Scroll animations use `viewport={{ once: true }}`
+- [ ] Hover animations use CSS transitions (not Framer Motion)
+
+---
+
+## 🚀 Commands
+
+```bash
+npm run dev        # Start dev server (http://localhost:4321)
+npm run build      # Production build
+npm run preview    # Preview production build
+npx shadcn add <component>  # Add shadcn component
+```
+
+---
+
+## 📚 Documentation
+
+- [Astro Docs](https://docs.astro.build)
+- [React in Astro](https://docs.astro.build/en/guides/integrations-guide/react/)
+- [Tailwind CSS v4](https://tailwindcss.com/docs)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Framer Motion](https://www.framer.com/motion/)
+
+---
+
+## 🤝 Working with AI Agents
+
+When generating code:
+
+1. **Always follow the structure** defined above
+2. **Use existing components** from `components/ui/` before creating new ones
+3. **Use animation variants** from `lib/animations.ts`
+4. **Ask for clarification** if requirements are ambiguous
+5. **Explain design decisions** in comments when non-obvious
+6. **Test responsiveness** mentally — consider mobile, tablet, desktop
+7. **Consider RTL** — test layout in both directions
+8. **Performance first** — choose the lightest solution that works
+9. **Accessibility always** — respect reduced motion, add aria labels
+</file>
+
+<file path="astro.config.mjs">
+// @ts-check
+import { defineConfig } from "astro/config";
+import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "url";
+
+// https://astro.build/config
+export default defineConfig({
+  integrations: [react()],
+  vite: {
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
+    },
+  },
+});
+</file>
+
+<file path="package.json">
+{
+  "name": "bcpc-frontend",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/react": "^6.0.1",
+    "@base-ui/react": "^1.6.0",
+    "@fontsource-variable/geist": "^5.2.9",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^7.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.23.0",
+    "motion": "^12.42.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "shadcn": "^4.13.0",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.2",
+    "tw-animate-css": "^1.4.0"
+  }
+}
+</file>
+
+<file path="README.md">
+<div align="center">
+
+# 🏆 BCPC Frontend
+
+### Birjand Competitive Programming Contest
+
+**Branch of [ICPC](https://icpc.global/) at the University of Birjand**
+
+[![Astro](https://img.shields.io/badge/Astro-7.0-FF5D01?logo=astro&logoColor=white)](https://astro.build)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![Tailwind](https://img.shields.io/badge/Tailwind-4.3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-base--nova-000?logo=shadcnui&logoColor=white)](https://ui.shadcn.com)
+[![Node](https://img.shields.io/badge/Node-%3E%3D22.12-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+
+[🌐 Live Demo](#) · [📖 Documentation](./AGENTS.md) · [🐛 Report Bug](#) · [✨ Request Feature](#)
+
+</div>
+
+---
+
+## 📖 About The Project
+
+**BCPC** (Birjand Competitive Programming Contest) is the official website for the University of Birjand's branch of the International Collegiate Programming Contest (ICPC). This project serves as the frontend platform for contestants, organizers, and the programming community.
+
+### 🎯 Features
+
+- 🏠 **Landing Page** — Engaging hero section with smooth animations and contest highlights
+- 📝 **Registration** — Multi-step registration form for participants
+- 🖼️ **Gallery** — Photo archive from previous years' contests
+- 💻 **Online Contest Portal** — Secure login and entry for live contests
+- 📞 **Contact Page** — Communication channels with organizers
+- 🌙 **Dark/Light Mode** — Theme switching with persistent preference
+- 📱 **Fully Responsive** — Mobile-first design optimized for all devices
+- 🇮🇷 **RTL Support** — Native Persian language support with proper RTL layout
+- ⚡ **Blazing Fast** — Static-first with Astro, interactive where needed with React
+
+---
+
+## 🛠️ Tech Stack
+
+| Category              | Technology                                           | Version                |
+| --------------------- | ---------------------------------------------------- | ---------------------- |
+| **Framework**         | [Astro](https://astro.build)                         | `^7.0.0`               |
+| **UI Library**        | [React](https://react.dev)                           | `^19.2.7`              |
+| **Styling**           | [Tailwind CSS](https://tailwindcss.com)              | `^4.3.2` (Vite plugin) |
+| **Component Library** | [shadcn/ui](https://ui.shadcn.com)                   | `^4.13.0` (base-nova)  |
+| **Animations**        | [Motion](https://motion.dev)                         | `^12.42.2`             |
+| **Icons**             | [Lucide React](https://lucide.dev)                   | `^1.23.0`              |
+| **Fonts**             | [Geist](https://vercel.com/font)                     | `^5.2.9`               |
+| **Language**          | [TypeScript](https://www.typescriptlang.org)         | Strict mode            |
+| **Utilities**         | `clsx`, `tailwind-merge`, `class-variance-authority` | —                      |
+
+> [!NOTE]
+> This project uses **shadcn/ui with base-ui** (not Radix) and **Tailwind CSS v4** with the new Vite plugin.
+
+---
+
+## 📋 Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** `>= 22.12.0` — [Download](https://nodejs.org)
+- **npm** `>= 10` (comes with Node.js)
+- **Git** — [Download](https://git-scm.com)
+
+Verify your installation:
+
+```bash
+node --version   # Should be v22.12.0 or higher
+npm --version
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/your-username/bcpc-frontend.git
+cd bcpc-frontend
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start Development Server
+
+```bash
+npm run dev
+```
+
+The site will be available at **http://localhost:4321**
+
+> 💡 **Tip:** For background mode (useful when working with AI agents):
+>
+> ```bash
+> npm run dev -- --background
+> ```
+>
+> Manage with: `astro dev stop`, `astro dev status`, `astro dev logs`
+
+---
+
+## 📦 Available Scripts
+
+| Command                      | Description                                |
+| ---------------------------- | ------------------------------------------ |
+| `npm run dev`                | Start local dev server at `localhost:4321` |
+| `npm run build`              | Build for production to `./dist/`          |
+| `npm run preview`            | Preview production build locally           |
+| `npm run astro check`        | Type-check Astro files                     |
+| `npx shadcn add <component>` | Add a shadcn/ui component                  |
+
+---
+
+## 📁 Project Structure
+
+```
+bcpc-frontend/
+├── public/                  # Static assets (served as-is)
+│   ├── favicon.ico
+│   └── favicon.svg
+├── src/
+│   ├── assets/              # Images, SVGs, fonts
+│   │   ├── images/          # Photos (gallery, hero, sponsors)
+│   │   └── icons/           # Custom SVG icons
+│   ├── components/
+│   │   ├── ui/              # shadcn/ui primitives (DO NOT edit manually)
+│   │   ├── sections/        # Landing page sections (Hero, About, etc.)
+│   │   ├── layout/          # Header, Footer, Navbar
+│   │   ├── animations/      # Reusable animation components
+│   │   └── shared/          # Reusable UI components
+│   ├── hooks/               # Custom React hooks
+│   ├── layouts/             # Astro layouts (BaseLayout, AuthLayout)
+│   ├── lib/                 # Utilities & helpers
+│   │   ├── utils.ts         # cn() helper
+│   │   ├── constants.ts     # Site-wide constants
+│   │   └── animations.ts    # Animation variants
+│   ├── pages/               # File-based routing
+│   │   ├── index.astro      # Landing page
+│   │   ├── about.astro      # About the contest
+│   │   ├── gallery.astro    # Photo gallery
+│   │   ├── register.astro   # Registration
+│   │   ├── contact.astro    # Contact us
+│   │   └── login.astro      # Contest entry
+│   └── styles/
+│       ├── global.css       # Tailwind + theme variables
+│       └── animations.css   # Custom keyframes
+├── AGENTS.md                # AI agent guidelines
+├── astro.config.mjs         # Astro configuration
+├── components.json          # shadcn/ui configuration
+├── package.json
+└── tsconfig.json
+```
+
+> 📌 **Important:** Never edit files in `components/ui/` directly. Use `npx shadcn add <component>` instead.
+
+---
+
+## 🎨 Code Conventions
+
+This project follows strict conventions defined in [`AGENTS.md`](./AGENTS.md). Key points:
+
+### Component Structure
+
+```tsx
+// ✅ Named exports, typed props, semantic HTML
+interface HeroSectionProps {
+  title: string;
+  subtitle?: string;
+}
+
+export function HeroSection({ title, subtitle }: HeroSectionProps) {
+  return <section>...</section>;
+}
+```
+
+### Styling
+
+- Always use **Tailwind utility classes** (no inline styles)
+- Use `cn()` helper for conditional classes: `cn("base", condition && "active")`
+- Use **CSS variables** for theming (defined in `global.css`)
+
+### Animations
+
+- Use **Framer Motion** for React components
+- Use **CSS transitions** for simple hover effects
+- Respect `prefers-reduced-motion` for accessibility
+- Use `client:visible` for scroll-triggered animations (performance)
+
+### File Naming
+
+- Components: `PascalCase.tsx` (e.g., `HeroSection.tsx`)
+- Hooks: `camelCase.ts` with `use` prefix (e.g., `use-countdown.ts`)
+- Pages: `kebab-case.astro` (e.g., `about.astro`)
+
+---
+
+## 🌐 Internationalization (i18n)
+
+The primary language is **Persian (fa)** with RTL layout:
+
+```html
+<html lang="fa" dir="rtl"></html>
+```
+
+- All user-facing text should be in Persian
+- Use `lib/constants.ts` for translatable strings
+- Test layouts in both RTL and LTR directions
+- Use `rtl:` and `ltr:` Tailwind variants when needed
+
+---
+
+## 📱 Responsive Design
+
+Mobile-first approach with these breakpoints:
+
+| Breakpoint | Width  | Device        |
+| ---------- | ------ | ------------- |
+| `sm`       | 640px  | Large mobile  |
+| `md`       | 768px  | Tablet        |
+| `lg`       | 1024px | Desktop       |
+| `xl`       | 1280px | Large desktop |
+
+**Test on:** 375px (iPhone SE), 768px (iPad), 1440px (Desktop)
+
+---
+
+## 🧪 Before Committing
+
+Use this checklist:
+
+- [ ] TypeScript strict mode — no errors
+- [ ] All components are typed
+- [ ] Responsive on mobile & desktop
+- [ ] Animations are smooth (60fps)
+- [ ] Respects `prefers-reduced-motion`
+- [ ] RTL layout works correctly
+- [ ] Accessibility: `alt`, `aria-label`, semantic HTML
+- [ ] No hardcoded strings (use constants)
+- [ ] No unused imports or variables
+
+---
+
+## 🚢 Deployment
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+Output will be in the `dist/` directory.
+
+### Deploy to Vercel (Recommended)
+
+1. Push your code to GitHub
+2. Import the repository in [Vercel](https://vercel.com)
+3. Vercel will auto-detect Astro and deploy
+
+### Deploy to Netlify
+
+1. Create a `netlify.toml`:
+
+```toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+```
+
+2. Connect your repository in [Netlify](https://netlify.com)
+
+### Deploy to GitHub Pages
+
+Add to `astro.config.mjs`:
+
+```js
+export default defineConfig({
+  site: "https://your-username.github.io",
+  base: "/bcpc-frontend",
+  output: "static",
+});
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** your changes: `git commit -m 'Add amazing feature'`
+4. **Push** to the branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
+
+Please read [`AGENTS.md`](./AGENTS.md) for coding standards before contributing.
+
+### Reporting Issues
+
+Found a bug? Please open an issue with:
+
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- Screenshots (if applicable)
+- Browser and device information
+
+---
+
+## 👥 Team
+
+**BCPC Development Team** — University of Birjand
+
+- 💻 **Frontend Development** — [Your Name](#)
+- 🎨 **UI/UX Design** — [Designer Name](#)
+- 📋 **Project Management** — [Manager Name](#)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [ICPC](https://icpc.global/) — International Collegiate Programming Contest
+- [University of Birjand](https://birjand.ac.ir/) — Host institution
+- [Astro](https://astro.build) — Amazing static site generator
+- [shadcn/ui](https://ui.shadcn.com) — Beautiful component library
+- [Tailwind CSS](https://tailwindcss.com) — Utility-first CSS framework
+- [Vazirmatn Font](https://github.com/rastikerdar/vazirmatn) — Persian font
+
+---
+
+## 📞 Contact
+
+**BCPC Organizing Committee**  
+University of Birjand, Iran
+
+- 📧 Email: `bcpc@birjand.ac.ir`
+- 🌐 Website: `https://bcpc.birjand.ac.ir`
+- 💬 Telegram: `t.me/SSOSC`
+
+---
+
+<div align="center">
+
+**⭐ If you find this project useful, please consider giving it a star!**
+
+Made with ❤️ by the BCPC Team
+
+</div>
+</file>
+
+<file path="tsconfig.json">
+{
+  "extends": "astro/tsconfigs/strict",
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist"],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+</file>
+
+</files>
