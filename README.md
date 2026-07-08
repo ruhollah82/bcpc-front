@@ -78,7 +78,7 @@ npm --version
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/bcpc-frontend.git
+git clone https://github.com/ruhollah82/bcpc-frontend.git
 cd bcpc-frontend
 ```
 
