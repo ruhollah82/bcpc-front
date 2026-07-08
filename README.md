@@ -345,8 +345,6 @@ This project is licensed under the MIT License — see the [LICENSE](./LICENSE) 
 **BCPC Organizing Committee**  
 University of Birjand, Iran
 
-- 📧 Email: `bcpc@birjand.ac.ir`
-- 🌐 Website: `https://bcpc.birjand.ac.ir`
 - 💬 Telegram: `t.me/SSOSC`
 
 ---
