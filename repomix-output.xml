@@ -48,6 +48,14 @@ src/
     astro.svg
     background.svg
   components/
+    animations/
+      FadeIn.tsx
+      StaggerContainer.tsx
+    layout/
+      Header.tsx
+    sections/
+      HeroSection.tsx
+      HighlightsSection.tsx
     ui/
       badge.tsx
       button.tsx
@@ -57,9 +65,13 @@ src/
       separator.tsx
       textarea.tsx
     Welcome.astro
+  hooks/
+    use-countdown.ts
   layouts/
     Layout.astro
   lib/
+    animations.ts
+    constants.ts
     utils.ts
   pages/
     index.astro
@@ -95,6 +107,323 @@ This section contains the contents of the repository's files.
 
 <file path="src/assets/background.svg">
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" fill="none"><path fill="url(#a)" fill-rule="evenodd" d="M-217.58 475.75c91.82-72.02 225.52-29.38 341.2-44.74C240 415.56 372.33 315.14 466.77 384.9c102.9 76.02 44.74 246.76 90.31 366.31 29.83 78.24 90.48 136.14 129.48 210.23 57.92 109.99 169.67 208.23 155.9 331.77-13.52 121.26-103.42 264.33-224.23 281.37-141.96 20.03-232.72-220.96-374.06-196.99-151.7 25.73-172.68 330.24-325.85 315.72-128.6-12.2-110.9-230.73-128.15-358.76-12.16-90.14 65.87-176.25 44.1-264.57-26.42-107.2-167.12-163.46-176.72-273.45-10.15-116.29 33.01-248.75 124.87-320.79Z" clip-rule="evenodd" style="opacity:.154"/><path fill="url(#b)" fill-rule="evenodd" d="M1103.43 115.43c146.42-19.45 275.33-155.84 413.5-103.59 188.09 71.13 409 212.64 407.06 413.88-1.94 201.25-259.28 278.6-414.96 405.96-130 106.35-240.24 294.39-405.6 265.3-163.7-28.8-161.93-274.12-284.34-386.66-134.95-124.06-436-101.46-445.82-284.6-9.68-180.38 247.41-246.3 413.54-316.9 101.01-42.93 207.83 21.06 316.62 6.61Z" clip-rule="evenodd" style="opacity:.154"/><defs><linearGradient id="b" x1="373" x2="1995.44" y1="1100" y2="118.03" gradientUnits="userSpaceOnUse"><stop stop-color="#D83333"/><stop offset="1" stop-color="#F041FF"/></linearGradient><linearGradient id="a" x1="107.37" x2="1130.66" y1="1993.35" y2="1026.31" gradientUnits="userSpaceOnUse"><stop stop-color="#3245FF"/><stop offset="1" stop-color="#BC52EE"/></linearGradient></defs></svg>
+</file>
+
+<file path="src/components/animations/FadeIn.tsx">
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
+
+interface FadeInProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  direction?: "up" | "down" | "left" | "right" | "none";
+}
+
+export function FadeIn({
+  children,
+  className,
+  delay = 0,
+  direction = "up",
+}: FadeInProps) {
+  const directionOffset = {
+    up: { y: 30 },
+    down: { y: -30 },
+    left: { x: 30 },
+    right: { x: -30 },
+    none: {},
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, ...directionOffset[direction] }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{
+        duration: 0.5,
+        delay,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className={cn(className)}
+    >
+      {children}
+    </motion.div>
+  );
+}
+</file>
+
+<file path="src/components/animations/StaggerContainer.tsx">
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
+
+interface StaggerContainerProps {
+  children: React.ReactNode;
+  className?: string;
+  staggerDelay?: number;
+}
+
+export function StaggerContainer({
+  children,
+  className,
+  staggerDelay = 0.1,
+}: StaggerContainerProps) {
+  return (
+    <motion.div
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      variants={{
+        hidden: {},
+        visible: { transition: { staggerChildren: staggerDelay } },
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+interface StaggerItemProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function StaggerItem({ children, className }: StaggerItemProps) {
+  return (
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+        },
+      }}
+      className={cn(className)}
+    >
+      {children}
+    </motion.div>
+  );
+}
+</file>
+
+<file path="src/components/layout/Header.tsx">
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+
+export function Header() {
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <a
+          href="/"
+          className="flex items-center gap-2 font-bold text-lg text-foreground"
+        >
+          <span className="text-primary">BCPC</span>
+          <span className="hidden sm:inline">دانشگاه بیرجند</span>
+        </a>
+
+        <nav className="hidden md:flex items-center gap-8">
+          <a
+            href="/"
+            className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+          >
+            خانه
+          </a>
+          <a
+            href="/about"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+          >
+            درباره مسابقه
+          </a>
+          <a
+            href="/gallery"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+          >
+            گالری
+          </a>
+          <a
+            href="/contact"
+            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+          >
+            تماس با ما
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-4">
+          <Button size="sm" className="hidden sm:inline-flex">
+            ورود / ثبت‌نام
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            aria-label="منو"
+          >
+            <Menu className="size-5" />
+          </Button>
+        </div>
+      </div>
+    </header>
+  );
+}
+</file>
+
+<file path="src/components/sections/HeroSection.tsx">
+import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCountdown } from "@/hooks/use-countdown";
+import {
+  HERO_TITLE,
+  HERO_SUBTITLE,
+  CTA_REGISTER,
+  CTA_ABOUT,
+  CONTEST_DATE,
+} from "@/lib/constants";
+import {
+  StaggerContainer,
+  StaggerItem,
+} from "@/components/animations/StaggerContainer";
+import { CalendarDays } from "lucide-react";
+
+export function HeroSection() {
+  const timeLeft = useCountdown(CONTEST_DATE);
+
+  const timeUnits = [
+    { label: "روز", value: timeLeft.days },
+    { label: "ساعت", value: timeLeft.hours },
+    { label: "دقیقه", value: timeLeft.minutes },
+    { label: "ثانیه", value: timeLeft.seconds },
+  ];
+
+  return (
+    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-4 py-20">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-secondary/10" />
+
+      <div className="container mx-auto max-w-5xl text-center">
+        <StaggerContainer staggerDelay={0.15}>
+          <StaggerItem>
+            <div className="inline-flex items-center gap-2 rounded-full border bg-card px-4 py-1.5 text-sm text-muted-foreground shadow-sm mb-6">
+              <CalendarDays className="size-4 text-primary" />
+              <span>برگزاری در آبان ۱۴۰۵</span>
+            </div>
+          </StaggerItem>
+
+          <StaggerItem>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
+              {HERO_TITLE}
+            </h1>
+          </StaggerItem>
+
+          <StaggerItem>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+              {HERO_SUBTITLE}
+            </p>
+          </StaggerItem>
+
+          <StaggerItem>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+              <Button size="lg" className="text-base px-8 h-12">
+                {CTA_REGISTER}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="text-base px-8 h-12"
+              >
+                {CTA_ABOUT}
+              </Button>
+            </div>
+          </StaggerItem>
+
+          <StaggerItem>
+            <Card className="max-w-2xl mx-auto border-primary/20 bg-card/50 backdrop-blur-sm">
+              <CardContent className="pt-6">
+                <p className="text-sm text-muted-foreground mb-4">
+                  زمان باقی‌مانده تا شروع مسابقه
+                </p>
+                <div className="flex items-center justify-center gap-3 md:gap-6">
+                  {timeUnits.map((unit) => (
+                    <div
+                      key={unit.label}
+                      className="flex flex-col items-center"
+                    >
+                      <motion.div
+                        key={unit.value}
+                        initial={{ scale: 1.1, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="text-3xl md:text-5xl font-bold text-primary tabular-nums"
+                      >
+                        {unit.value.toString().padStart(2, "0")}
+                      </motion.div>
+                      <div className="text-xs md:text-sm text-muted-foreground mt-1">
+                        {unit.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </StaggerItem>
+        </StaggerContainer>
+      </div>
+    </section>
+  );
+}
+</file>
+
+<file path="src/components/sections/HighlightsSection.tsx">
+import { FadeIn } from "@/components/animations/FadeIn";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { HIGHLIGHTS } from "@/lib/constants";
+import { Users, Trophy, Network } from "lucide-react";
+
+const iconMap = { Users, Trophy, Network };
+
+export function HighlightsSection() {
+  return (
+    <section className="py-20 px-4 bg-muted/30">
+      <div className="container mx-auto max-w-6xl">
+        <FadeIn direction="up" className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            چرا در BCPC شرکت کنیم؟
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            فرصتی بی‌نظیر برای رشد مهارت‌ها، شبکه‌سازی و تجربه یک رقابت
+            هیجان‌انگیز
+          </p>
+        </FadeIn>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {HIGHLIGHTS.map((item, index) => {
+            const Icon = iconMap[item.icon as keyof typeof iconMap];
+            return (
+              <FadeIn key={item.title} delay={index * 0.1} direction="up">
+                <Card className="h-full text-center hover:shadow-lg transition-shadow duration-300 border-border/50">
+                  <CardHeader>
+                    <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                      <Icon className="size-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">{item.title}</CardTitle>
+                  </CardHeader>
+                  <CardDescription className="px-6 pb-6 text-base leading-relaxed">
+                    {item.description}
+                  </CardDescription>
+                </Card>
+              </FadeIn>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
 </file>
 
 <file path="src/components/ui/badge.tsx">
@@ -625,159 +954,104 @@ import background from '../assets/background.svg';
 </style>
 </file>
 
+<file path="src/hooks/use-countdown.ts">
+import { useState, useEffect } from "react";
+
+interface TimeLeft {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
+export function useCountdown(targetDate: Date): TimeLeft {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(
+    calculateTimeLeft(targetDate),
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(targetDate));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [targetDate]);
+
+  return timeLeft;
+}
+
+function calculateTimeLeft(targetDate: Date): TimeLeft {
+  const difference = targetDate.getTime() - new Date().getTime();
+  if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  };
+}
+</file>
+
+<file path="src/lib/animations.ts">
+export const fadeInUp = {
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+};
+
+export const staggerContainer = {
+  animate: {
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+export const staggerItem = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+  },
+};
+</file>
+
+<file path="src/lib/constants.ts">
+export const SITE_NAME = "مسابقه برنامه‌نویسی بیرجند (BCPC)";
+export const HERO_TITLE = "بزرگترین رویداد برنامه‌نویسی رقابتی دانشگاه بیرجند";
+export const HERO_SUBTITLE =
+  "آماده‌اید تا مهارت‌های الگوریتمی خود را به چالش بکشید؟ در مسابقه BCPC شرکت کنید و با بهترین‌ها رقابت کنید.";
+export const CTA_REGISTER = "ثبت‌نام در مسابقه";
+export const CTA_ABOUT = "درباره مسابقه";
+
+// Set your actual contest date here
+export const CONTEST_DATE = new Date("2026-11-15T09:00:00");
+
+export const HIGHLIGHTS = [
+  {
+    title: "رقابت تیمی",
+    description:
+      "در تیم‌های ۳ نفره با هم‌تیمی‌های خود برای حل مسائل پیچیده رقابت کنید.",
+    icon: "Users",
+  },
+  {
+    title: "جوایز ارزنده",
+    description: "کسب جوایز نفیس و گواهی‌نامه‌های معتبر برای تیم‌های برتر.",
+    icon: "Trophy",
+  },
+  {
+    title: "شبکه‌سازی",
+    description: "ارتباط با برنامه‌نویسان برتر دانشگاه و اساتید مجرب.",
+    icon: "Network",
+  },
+];
+</file>
+
 <file path="src/lib/utils.ts">
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
-</file>
-
-<file path="src/pages/index.astro">
----
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
----
-
-<Layout>
-	<Welcome />
-</Layout>
-</file>
-
-<file path="src/styles/global.css">
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
-
-@custom-variant dark (&:is(.dark *));
-
-@theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-:root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
-  html {
-    @apply font-sans;
-    }
 }
 </file>
 
@@ -836,34 +1110,345 @@ pnpm-debug.log*
 }
 </file>
 
-<file path="src/layouts/Layout.astro">
+<file path="src/pages/index.astro">
 ---
-import '../styles/global.css'   
+import Layout from '../layouts/Layout.astro';
+import { Header } from '@/components/layout/Header';
+import { HeroSection } from '@/components/sections/HeroSection';
+import { HighlightsSection } from '@/components/sections/HighlightsSection';
 ---
+<Layout>
+	<Header />
+	<main>
+		<!-- client:load because it contains a live ticking countdown timer -->
+		<HeroSection client:load />
+		
+		<!-- client:visible for performance (only animates when scrolled into view) -->
+		<HighlightsSection client:visible />
+	</main>
+</Layout>
+</file>
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+<file path="src/styles/global.css">
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(0.9892 0.0053 286.3028);
+  --foreground: oklch(0.2257 0.0194 280.2492);
+  --card: oklch(0.9892 0.0053 286.3028);
+  --card-foreground: oklch(0.2257 0.0194 280.2492);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2257 0.0194 280.2492);
+  --primary: oklch(0.6217 0.1799 287.7754);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.957 0.0187 289.3286);
+  --secondary-foreground: oklch(0.3569 0.0813 288.2584);
+  --muted: oklch(0.9601 0.0093 286.2229);
+  --muted-foreground: oklch(0.51 0.0425 284.7922);
+  --accent: oklch(0.957 0.0187 289.3286);
+  --accent-foreground: oklch(0.4619 0.2173 279.9839);
+  --destructive: oklch(0.643 0.1925 24.3201);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9175 0.0216 285.9662);
+  --input: oklch(0.866 0.0371 285.5991);
+  --ring: oklch(0.6217 0.1799 287.7754);
+  --chart-1: oklch(0.6217 0.1799 287.7754);
+  --chart-2: oklch(0.7716 0.1036 291.3083);
+  --chart-3: oklch(0.3569 0.0813 288.2584);
+  --chart-4: oklch(0.874 0.0537 291.1256);
+  --chart-5: oklch(0.5413 0.1805 285.7967);
+  --sidebar: oklch(0.9811 0.0093 286.2277);
+  --sidebar-foreground: oklch(0.3755 0.0323 284.7377);
+  --sidebar-primary: oklch(0.6217 0.1799 287.7754);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.957 0.0187 289.3286);
+  --sidebar-accent-foreground: oklch(0.4619 0.2173 279.9839);
+  --sidebar-border: oklch(0.943 0.0134 286.1402);
+  --sidebar-ring: oklch(0.6217 0.1799 287.7754);
+  --font-sans: "Vazirmatn", "Geist Variable", sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: JetBrains Mono, monospace;
+  --radius: 0.5rem;
+  --shadow-x: 0px;
+  --shadow-y: 4px;
+  --shadow-blur: 10px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.05;
+  --shadow-color: #000000;
+  --shadow-2xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.03);
+  --shadow-xs: 0px 4px 10px 0px hsl(0 0% 0% / 0.03);
+  --shadow-sm:
+    0px 4px 10px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --shadow:
+    0px 4px 10px 0px hsl(0 0% 0% / 0.05), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+  --shadow-md:
+    0px 4px 10px 0px hsl(0 0% 0% / 0.05), 0px 2px 4px -1px hsl(0 0% 0% / 0.05);
+  --shadow-lg:
+    0px 4px 10px 0px hsl(0 0% 0% / 0.05), 0px 4px 6px -1px hsl(0 0% 0% / 0.05);
+  --shadow-xl:
+    0px 4px 10px 0px hsl(0 0% 0% / 0.05), 0px 8px 10px -1px hsl(0 0% 0% / 0.05);
+  --shadow-2xl: 0px 4px 10px 0px hsl(0 0% 0% / 0.13);
+  --tracking-normal: -0.01em;
+  --spacing: 0.25rem;
+
+  /* 🫧 Liquid Glass Variables */
+  --glass-blur: 20px;
+  --glass-saturation: 180%;
+  --glass-bg: oklch(100% 0 0 / 0.15);
+  --glass-bg-strong: oklch(100% 0 0 / 0.25);
+  --glass-bg-subtle: oklch(100% 0 0 / 0.08);
+  --glass-border: oklch(100% 0 0 / 0.3);
+  --glass-highlight: oklch(100% 0 0 / 0.5);
+  --glass-shadow-color: oklch(0% 0 0 / 0.15);
+  --glass-inner-glow: oklch(100% 0 0 / 0.1);
+}
+
+.dark {
+  --background: oklch(0.1503 0.0171 289.8934);
+  --foreground: oklch(0.9284 0.0161 286.0812);
+  --card: oklch(0.1503 0.0171 289.8934);
+  --card-foreground: oklch(0.9284 0.0161 286.0812);
+  --popover: oklch(0.1941 0.024 287.7536);
+  --popover-foreground: oklch(0.9284 0.0161 286.0812);
+  --primary: oklch(0.6217 0.1799 287.7754);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.2354 0.0399 287.2762);
+  --secondary-foreground: oklch(0.9284 0.0161 286.0812);
+  --muted: oklch(0.2047 0.0296 286.5224);
+  --muted-foreground: oklch(0.6907 0.0467 285.113);
+  --accent: oklch(0.2739 0.0616 285.5915);
+  --accent-foreground: oklch(0.7716 0.1036 291.3083);
+  --destructive: oklch(0.3997 0.1352 25.8101);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.2587 0.0372 285.7691);
+  --input: oklch(0.3015 0.0518 286.0003);
+  --ring: oklch(0.6217 0.1799 287.7754);
+  --chart-1: oklch(0.6217 0.1799 287.7754);
+  --chart-2: oklch(0.5413 0.1805 285.7967);
+  --chart-3: oklch(0.7716 0.1036 291.3083);
+  --chart-4: oklch(0.3569 0.0813 288.2584);
+  --chart-5: oklch(0.4539 0.1474 285.6505);
+  --sidebar: oklch(0.1616 0.023 287.693);
+  --sidebar-foreground: oklch(0.8147 0.0307 285.6989);
+  --sidebar-primary: oklch(0.6217 0.1799 287.7754);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.2354 0.0399 287.2762);
+  --sidebar-accent-foreground: oklch(0.9284 0.0161 286.0812);
+  --sidebar-border: oklch(0.2587 0.0372 285.7691);
+  --sidebar-ring: oklch(0.6217 0.1799 287.7754);
+  --radius: 0.5rem;
+  --shadow-x: 0px;
+  --shadow-y: 8px;
+  --shadow-blur: 20px;
+  --shadow-spread: 0px;
+  --shadow-opacity: 0.4;
+  --shadow-color: #000000;
+  --shadow-2xs: 0px 8px 20px 0px hsl(0 0% 0% / 0.2);
+  --shadow-xs: 0px 8px 20px 0px hsl(0 0% 0% / 0.2);
+  --shadow-sm:
+    0px 8px 20px 0px hsl(0 0% 0% / 0.4), 0px 1px 2px -1px hsl(0 0% 0% / 0.4);
+  --shadow:
+    0px 8px 20px 0px hsl(0 0% 0% / 0.4), 0px 1px 2px -1px hsl(0 0% 0% / 0.4);
+  --shadow-md:
+    0px 8px 20px 0px hsl(0 0% 0% / 0.4), 0px 2px 4px -1px hsl(0 0% 0% / 0.4);
+  --shadow-lg:
+    0px 8px 20px 0px hsl(0 0% 0% / 0.4), 0px 4px 6px -1px hsl(0 0% 0% / 0.4);
+  --shadow-xl:
+    0px 8px 20px 0px hsl(0 0% 0% / 0.4), 0px 8px 10px -1px hsl(0 0% 0% / 0.4);
+  --shadow-2xl: 0px 8px 20px 0px hsl(0 0% 0% / 1);
+
+  /* 🫧 Liquid Glass Variables - Dark Mode */
+  --glass-bg: oklch(20% 0.02 280 / 0.3);
+  --glass-bg-strong: oklch(25% 0.03 280 / 0.45);
+  --glass-bg-subtle: oklch(15% 0.01 280 / 0.2);
+  --glass-border: oklch(100% 0 0 / 0.15);
+  --glass-highlight: oklch(100% 0 0 / 0.2);
+  --glass-shadow-color: oklch(0% 0 0 / 0.4);
+  --glass-inner-glow: oklch(100% 0 0 / 0.05);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+
+  --tracking-tighter: calc(var(--tracking-normal) - 0.05em);
+  --tracking-tight: calc(var(--tracking-normal) - 0.025em);
+  --tracking-normal: var(--tracking-normal);
+  --tracking-wide: calc(var(--tracking-normal) + 0.025em);
+  --tracking-wider: calc(var(--tracking-normal) + 0.05em);
+  --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
+
+@layer base {
+  html {
+    direction: rtl;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    letter-spacing: var(--tracking-normal);
+  }
+}
+
+@layer components {
+  /* 🫧 Liquid Glass - Base */
+  .liquid-glass {
+    position: relative;
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur))
+      saturate(var(--glass-saturation));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      0 8px 32px 0 var(--glass-shadow-color),
+      0 2px 8px 0 oklch(0% 0 0 / 0.08),
+      inset 0 1px 0 0 var(--glass-highlight),
+      inset 0 -1px 0 0 oklch(100% 0 0 / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ✨ Specular Highlight */
+  .liquid-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      oklch(100% 0 0 / 0.25) 0%,
+      oklch(100% 0 0 / 0.05) 30%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* 🌈 Refraction Tint */
+  .liquid-glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      oklch(80% 0.1 280 / 0.08) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: overlay;
+  }
+
+  /* 🖱️ Hover Effect */
+  .liquid-glass:hover {
+    background: var(--glass-bg-strong);
+    box-shadow:
+      0 12px 40px 0 var(--glass-shadow-color),
+      0 4px 12px 0 oklch(0% 0 0 / 0.1),
+      inset 0 1px 0 0 var(--glass-highlight),
+      inset 0 -1px 0 0 oklch(100% 0 0 / 0.12);
+    transform: translateY(-1px);
+  }
+
+  /* 👆 Active/Pressed */
+  .liquid-glass:active {
+    transform: translateY(0);
+    background: var(--glass-bg-strong);
+  }
+
+  /* 🪟 Strong Variant */
+  .liquid-glass-strong {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+  }
+
+  /* 💊 Pill Variant */
+  .liquid-glass-pill {
+    border-radius: 9999px;
+    padding: 0.5rem 1.25rem;
+  }
+
+  /* 🎯 Subtle Variant */
+  .liquid-glass-subtle {
+    background: var(--glass-bg-subtle);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+}
+
+/* 📱 Performance Optimization */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition: none;
+  }
+
+  .liquid-glass:hover {
+    transform: none;
+  }
+}
 </file>
 
 <file path="AGENTS.md">
@@ -1631,6 +2216,35 @@ export default defineConfig({
     }
   }
 }
+</file>
+
+<file path="src/layouts/Layout.astro">
+---
+import '../styles/global.css'   
+---
+<!doctype html>
+<html lang="fa" dir="rtl">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="generator" content={Astro.generator} />
+		<title>مسابقه برنامه‌نویسی بیرجند (BCPC)</title>
+		<!-- Vazirmatn Font for Persian -->
+		<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+<style>
+	html, body {
+		margin: 0;
+		width: 100%;
+		height: 100%;
+	}
+</style>
 </file>
 
 <file path="README.md">

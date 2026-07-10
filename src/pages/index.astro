@@ -5,12 +5,9 @@ import { HeroSection } from '@/components/sections/HeroSection';
 import { HighlightsSection } from '@/components/sections/HighlightsSection';
 ---
 <Layout>
-	<Header />
-	<main>
-		<!-- client:load because it contains a live ticking countdown timer -->
-		<HeroSection client:load />
-		
-		<!-- client:visible for performance (only animates when scrolled into view) -->
-		<HighlightsSection client:visible />
-	</main>
+  <Header client:load />
+  <main>
+    <HeroSection client:load />
+    <HighlightsSection client:visible />
+  </main>
 </Layout>
